@@ -1,0 +1,151 @@
+{
+  "ServiceName": "观察并抓取货物",
+  "ServiceID": "IndustryService",
+  "Workflow": [
+    {
+      "Node": "Node1",
+      "Type": "Normal",
+      "Parents": [],
+      "Affinity": [],
+      "TaskName": "机器人启动",
+      "Service": "edu.hit.examples.robot_start",
+      "Device": "192.168.1.202",
+      "Actions":[
+        {
+          "Type":"CMD",
+          "Name": "机器人启动",
+          "Command": "python3 ./scripts/robotflow_v2/robot_start.py",
+          "Input": [
+            "RobotID=<111>",
+            "RobotTargetPosition=<111>"
+          ],
+          "Output": [
+            "RobotAfterMovePosition",
+            "Result"
+          ]
+        }
+      ],
+      "Inputs": [],
+      "Outputs": [
+        "RobotAfterMovePosition",
+        "Result"
+      ]
+    },
+    {
+      "Node": "Node2",
+      "Type": "Condition-Node",
+      "Parents": ["Node1"],
+      "Affinity": [],
+      "TaskName": "识别最高点",
+      "Service": "edu.hit.examples.identify_the_highest_point",
+      "Device": "192.168.1.202",
+      "Condition":"$Node1.Outputs.Result == true",
+      "Actions":[
+        {
+          "Type":"CMD",
+          "Name": "识别最高点",
+          "Command": "python3 ./scripts/robotflow_v2/identify_the_highest_point.py",
+          "Input": [
+            "RobotID=<102>",
+            "CameraID=<115>"
+          ],
+          "Output": [
+            "ArmTCPPosition",
+            "Result"
+          ]
+        }
+      ],
+      "Inputs": [],
+      "Outputs": [
+        "ArmTCPPosition",
+        "Result"
+      ]
+    },
+    {
+      "Node": "Node3",
+      "Type": "Condition-Node",
+      "Parents": ["Node2"],
+      "Affinity": [],
+      "TaskName": "移动机械臂到指定位置",
+      "Service": "edu.hit.examples.move_arm",
+      "Device": "192.168.1.202",
+      "Condition":"$Node2.Outputs.Result == true",
+      "Actions":[
+        {
+          "Type": "CMD",
+          "Name": "移动机械臂到指定位置",
+          "Command": "python3 ./scripts/robotflow_v2/move_arm.py",
+          "Input": [
+            "RobotID=<102>",
+            "ArmTCPPosition=$Node2.Outputs.ArmTCPPosition"
+          ],
+          "Output": [
+            "Result"
+          ]
+        }
+      ],
+      "Inputs": [],
+      "Outputs": [
+        "Result"
+      ]
+    },
+    {
+      "Node": "Node4",
+      "Type": "Condition-Node",
+      "Parents": ["Node3"],
+      "Affinity": [],
+      "TaskName": "定位二维码的位置",
+      "Service": "edu.hit.examples.locate_QR_code",
+      "Device": "192.168.1.202",
+      "Condition":"$Node3.Outputs.Result == true",
+      "Actions":[
+        {
+          "Type": "CMD",
+          "Name": "定位二维码的位置",
+          "Command": "python3 ./scripts/robotflow_v2/locate_QR_code.py",
+          "Input": [
+            "RobotID=<102>",
+            "CameraID=<102>"
+          ],
+          "Output": [
+            "ArmGrabPosition",
+            "Result"
+          ]
+        }
+      ],
+      "Inputs": [],
+      "Outputs": [
+        "ArmGrabPosition",
+        "Result"
+      ]
+    },
+    {
+      "Node": "Node5",
+      "Type": "Condition-Node",
+      "Parents": ["Node4"],
+      "Affinity": [],
+      "TaskName": "抓取指定位置的货物",
+      "Service": "edu.hit.examples.grab_goods",
+      "Device": "192.168.1.202",
+      "Condition":"$Node4.Outputs.Result == true",
+      "Actions":[
+        {
+          "Type": "CMD",
+          "Name": "抓取指定位置的货物",
+          "Command": "python3 ./scripts/robotflow_v2/grab_goods.py",
+          "Input": [
+            "RobotID=<102>",
+            "ArmGrabPosition=$Node4.Outputs.ArmGrabPosition"
+          ],
+          "Output": [
+            "Result"
+          ]
+        }
+      ],
+      "Inputs": [],
+      "Outputs": [
+        "Result"
+      ]
+    }
+  ]
+}

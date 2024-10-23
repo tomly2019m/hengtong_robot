@@ -1,0 +1,36 @@
+{
+  "PackageName":"edu.hit.examples.identify_the_highest_point",
+  "Capabilities": [
+    "Network"
+  ],
+  "Constraints": {
+  },
+  "Policy": "Fixed",
+  "Platform": "Scheduler",
+  "MaskVector": [0.3, 0.6, 0.5, 0, 0, 0, 1, 1, 1],
+  "Scale": [0.3, 0.6, 0.5, 0, 0, 0, 1, 1, 1],
+  "Inputs": [
+    {
+      "Name": "RobotID",
+      "Type": "String",
+      "Describe": "机器人ID"
+    },
+    {
+      "Name": "CameraID",
+      "Type": "String",
+      "Describe": "相机的ID"
+    }
+  ],
+  "Outputs": [
+    {
+      "Name": "ArmTCPPosition",
+      "Type": "String",
+      "Describe": "识别到的最高点的位置"
+    },
+    {
+      "Name": "Result",
+      "Type": "Boolean",
+      "Describe": "移动任务是否成功"
+    }
+  ]
+}
